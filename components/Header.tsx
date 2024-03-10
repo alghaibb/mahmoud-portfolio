@@ -1,10 +1,56 @@
-import React from "react";
+"use client";
+
+import React, { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
+
 import ThemeToggle from "./ThemeToggle";
+import Logo from "./Logo";
+import Nav from "./Nav";
+import MobileNav from "./MobileNav";
 
 const Header = () => {
+  const [header, setHeader] = useState(false);
+  const pathname = usePathname();
+
+  useEffect(() => {
+    const handleScroll = () => {
+      window.scrollY > 50 ? setHeader(true) : setHeader(false);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    // cleanup event listener
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
   return (
-    <header>
-      <ThemeToggle />
+    <header
+      className={`${
+        header
+          ? "py-4 bg-white shadow-lg dark:bg-accent"
+          : "py-6 dark:bg-transparent"
+      } sticky top-0 z-30 transition-all ${pathname === "/" && "bg-[#fef9f5]"}`}
+    >
+      <div className="container mx-auto">
+        <div className="flex items-center justify-between">
+          <Logo />
+          <div className="flex items-center gap-x-6">
+            {/* nav */}
+            <Nav
+              containerStyles="hidden xl:flex gap-x-8 items-center"
+              linkStyles="relative hover:text-primary transition-all"
+              underlineStyles="absolute w-full top-full h-[2px] bg-primary "
+            />
+            <ThemeToggle />
+            {/* mobile nav */}
+            <div className="xl:hidden">
+              <MobileNav />
+            </div>
+          </div>
+        </div>
+      </div>
     </header>
   );
 };
